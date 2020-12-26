@@ -9,8 +9,8 @@ url = "mongodb+srv://polo:" + urllib.parse.quote(
 # url is just an example (your url will be different)
 
 cluster = MongoClient(url)
-db = cluster['scraper']
-collection = db['gst2']
+db = cluster['scraper1']
+collection = db['gst3']
 
 # print(db)
 lsttt = ["ASHIRVAD PIPES PRIVATE LIMITED ", "ASCO NUMATICS (INDIA) PRIVATE LIMITED ", "sdjzhcb",

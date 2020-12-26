@@ -5,7 +5,8 @@ import re
 import sys
 import time
 from datetime import date
-
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 import requests
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.keys import Keys
@@ -22,21 +23,38 @@ from config import (
     set_automation_as_head_less,
     URL, URL1
 )
+from selenium.webdriver.common.proxy import Proxy, ProxyType
+
 import save_db
 from filingTable import filing_table
 from profile_file import profile_list
 from test import CaptchaSolver
 import read_excel
+import random
+from hhub import proxylist
 
 lst = read_excel.lst
+
+
+# pproxy = "5.61.58.211:4114:RU"
+
 
 # lst = ["ASHIRVAD PIPES PRIVATE LIMITED "]
 
 
 class Runner:
 
-    def __init__(self, base_url):
+    def __init__(self, base_url, pproxy):
         self.base_url = base_url
+        prox = Proxy()
+        prox.proxy_type = ProxyType.MANUAL
+        prox.http_proxy = pproxy
+        # prox.socks_proxy = pproxy
+        prox.ssl_proxy = pproxy
+        print(pproxy)
+        capabilities = webdriver.DesiredCapabilities.CHROME
+        prox.add_to_capabilities(capabilities)
+
         options = get_web_driver_options()
         # set_proxy(options)
         set_ignore_certificate_error(options)
@@ -45,14 +63,14 @@ class Runner:
         # set_automation_as_head_less(options)
         set_browser_in_fullScreen(options)
 
-        self.driver = get_chrome_web_driver(options)
+        self.driver = get_chrome_web_driver(options, capabilities)
         self.dictt = {}
 
     def know_your_gst(self, cname):
         self.driver.get(self.base_url)
         self.driver.implicitly_wait(5)
         time.sleep(1)
-        self.driver.find_element_by_id("gstnumber").send_keys(cname+Keys.ENTER)
+        self.driver.find_element_by_id("gstnumber").send_keys(cname + Keys.ENTER)
 
         # self.driver.find_element_by_xpath('/html/body/div[1]/div[2]/div[1]/div[1]/form/div[2]/input').click()
         # time.sleep(2)
@@ -93,7 +111,7 @@ class Runner:
             captcha_answ = obj.recaptcha()
         time.sleep(1)
         # self.driver.execute_script(f"document.getElementById('fo-captcha').value={captcha_answ}")
-        self.driver.find_element_by_id('fo-captcha').send_keys(captcha_answ,Keys.ENTER)
+        self.driver.find_element_by_id('fo-captcha').send_keys(captcha_answ, Keys.ENTER)
 
     def ectract_gst_number(self):
         lst = []
@@ -190,10 +208,14 @@ class Runner:
         pf_list = profile_list(line1, line2)
         return tbl, pf_list
 
+    def close_driver(self):
+        self.driver.close()
 
 def main():
-    run_obj = Runner(URL)
     for x in lst:
+        proxy_list = proxylist()
+        pproxy = random.choice(proxy_list)
+        run_obj = Runner(URL, pproxy)
         cname = {}
         try:
             pan = run_obj.know_your_gst(x)
@@ -218,6 +240,7 @@ def main():
                 # print(cname)
                 # import save_db
                 # save_db.insertData(cname)
+
         except Exception as e:
             print(str(e))
             continue
@@ -226,6 +249,7 @@ def main():
             print(cname)
             # print(type(cname))
             save_db.insertData(cname)
+            run_obj.close_driver()
             # print(cname)
             # with open("data_file.json", "w") as write_file:
             #     json.dump(cname, write_file)

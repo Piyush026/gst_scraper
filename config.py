@@ -1,10 +1,10 @@
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 # PROXY = "14.139.242.252:3128"
-PROXY = "14.63.228.217:80"
+# PROXY = "14.63.228.217:80"
 
-def get_chrome_web_driver(options):
-    return webdriver.Chrome(ChromeDriverManager().install(), chrome_options=options)
+def get_chrome_web_driver(options,capabilities):
+    return webdriver.Chrome(ChromeDriverManager().install(), chrome_options=options,desired_capabilities=capabilities)
 
 
 def get_web_driver_options():
@@ -27,7 +27,8 @@ def set_automation_as_head_less(options):
     options.add_argument('--headless')
 
 def set_proxy(options):
-    options.add_argument('--proxy-server=%s' % PROXY)
+    capabilities = webdriver.DesiredCapabilities.CHROME
+    capabilities.setCapability(ChromeOptions.CAPABILITY, options);
 
 def get_driver(options):
     return ChromeDriverManager(options)
