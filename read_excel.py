@@ -14,7 +14,7 @@ for i in range(2, m_row + 1):
     lst.append(cell_obj.value)
 # print(lst)
 
-hu = [lst[i:i + 30] for i in range(0, len(lst), 30)]
+# hu = [lst[i:i + 30] for i in range(0, len(lst), 30)]
 # print(len(hu))
 
 # url = "http://proxy.link/list/get/e40abb7f2ead053db343dd8e82e04ad7?geo=true"

@@ -211,8 +211,9 @@ class Runner:
     def close_driver(self):
         self.driver.close()
 
-def main():
-    for x in lst:
+
+def main(lstt):
+    for x in lstt:
         proxy_list = proxylist()
         pproxy = random.choice(proxy_list)
         run_obj = Runner(URL, pproxy)
